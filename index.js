@@ -115,7 +115,7 @@ aqicn.prototype.configureAccessory = function(accessory) {
 
 aqicn.prototype.addUpdateAccessory = function(data) {
     if (!this.accessory) {
-        var uuid = UUIDGen.generate("aqicn" + accessory.context.idx);
+        var uuid = UUIDGen.generate("aqicn" + data.idx);
         var newAccessory = new Accessory("aqicn", uuid);
 
         newAccessory.context = data;
