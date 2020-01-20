@@ -64,19 +64,19 @@ aqicn.prototype.updateState = function(accessory) {
     airService.setCharacteristic(Characteristic.AirQuality, level);
 
     if (accessory.context.iaqi.co) {
-        airService.setCharacteristic(Characteristic.CarbonMonoxideLevel, convert('co', 'usaEpa', 'raw', accessory.context.iaqi.co.v) * 1.16);
+        airService.setCharacteristic(Characteristic.CarbonMonoxideLevel, convert('co', 'usaEpa', 'raw', accessory.context.iaqi.co.v) * 0.0409 * 28.0101);
     } else {
         airService.removeCharacteristic(Characteristic.CarbonMonoxideLevel);
     }
 
     if (accessory.context.iaqi.no2) {
-        airService.setCharacteristic(Characteristic.NitrogenDioxideDensity, convert('no2', 'usaEpa', 'raw', accessory.context.iaqi.no2.v) * 1.91);
+        airService.setCharacteristic(Characteristic.NitrogenDioxideDensity, convert('no2', 'usaEpa', 'raw', accessory.context.iaqi.no2.v) * 0.0409 * 46.0055);
     } else {
         airService.removeCharacteristic(Characteristic.NitrogenDioxideDensity);
     }
 
     if (accessory.context.iaqi.o3) {
-        airService.setCharacteristic(Characteristic.OzoneDensity, this.convertOzone8hrRaw(accessory.context.iaqi.o3.v) * 2.0);
+        airService.setCharacteristic(Characteristic.OzoneDensity, convert('o3', 'usaEpa', 'raw', accessory.context.iaqi.o3.v) * 0.0409 * 47.9982);
     } else {
         airService.removeCharacteristic(Characteristic.OzoneDensity);
     }
@@ -94,7 +94,7 @@ aqicn.prototype.updateState = function(accessory) {
     }
 
     if (accessory.context.iaqi.so2) {
-        airService.setCharacteristic(Characteristic.SulphurDioxideDensity, convert('so2', 'usaEpa', 'raw', accessory.context.iaqi.so2.v) * 2.66)
+        airService.setCharacteristic(Characteristic.SulphurDioxideDensity, convert('so2', 'usaEpa', 'raw', accessory.context.iaqi.so2.v) * 0.0409 * 64.0638)
     } else {
         airService.removeCharacteristic(Characteristic.SulphurDioxideDensity);
     }
@@ -129,27 +129,5 @@ aqicn.prototype.addUpdateAccessory = function(data) {
         this.accessory.context = data;
 
         this.updateState(this.accessory);
-    }
-}
-
-// This is a hacky fix for the @shootismoke/convert library apparently only supporting 1 hour sampling of Ozone
-// while the data returned from aqicn seems to be an 8 hour sampling. Ideally that library adds support for this.
-aqicn.prototype.convertOzone8hrRaw = function(aqi) {
-    const invLinear = function(aqiHigh, aqiLow, concHigh, concLow, aqi) {
-        return ((aqi - aqiLow) / (aqiHigh - aqiLow)) * (concHigh - concLow) + concLow;
-    }
-
-    if (aqi >= 0 && aqi <= 50) {
-        return invLinear(50, 0, 54, 0, aqi);
-    } else if (aqi > 50 && aqi <= 100) {
-        return invLinear(100, 51, 70, 55, aqi);
-    } else if (aqi > 100 && aqi <= 150) {
-        return invLinear(150, 101, 85, 71, aqi);
-    } else if (aqi > 150 && aqi <= 200) {
-        return invLinear(200, 151, 105, 86, aqi);
-    } else if (aqi > 200 && aqi <= 300) {
-        return invLinear(300, 201, 200, 106, aqi);
-    } else {
-        return 0;
     }
 }

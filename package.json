@@ -1,6 +1,6 @@
 {
   "name": "homebridge-aqicn",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Air quality plugin for Homebridge using aqicn",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "homebridge": ">=0.3.0"
   },
   "dependencies": {
-    "@shootismoke/dataproviders": ">=0.2.6",
-    "@shootismoke/convert": ">=0.2.6"
+    "@shootismoke/dataproviders": ">=0.2.7",
+    "@shootismoke/convert": ">=0.2.7"
   }
 }
