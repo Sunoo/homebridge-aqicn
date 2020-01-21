@@ -43,12 +43,14 @@ aqicn.prototype.fetchData = function() {
 }
 
 aqicn.prototype.updateState = function(accessory) {
+    var date = new Date(accessory.context.time.s);
     accessory.getService(Service.AccessoryInformation)
         .setCharacteristic(Characteristic.Manufacturer, accessory.context.attributions[0].name)
         .setCharacteristic(Characteristic.Model, accessory.context.city.name)
-        .setCharacteristic(Characteristic.SerialNumber, accessory.context.idx);
+        .setCharacteristic(Characteristic.SerialNumber, accessory.context.idx)
+        .setCharacteristic(Characteristic.FirmwareRevision, date.getDate() + '.' + date.getHours() + '.' + date.getMinutes());
 
-    var airService = accessory.getService(Service.AirQualitySensor)
+    var airService = accessory.getService(Service.AirQualitySensor);
     var level = 0;
     if (accessory.context.aqi <= 50) {
         level = 1;
@@ -61,7 +63,8 @@ aqicn.prototype.updateState = function(accessory) {
     } else {
         level = 5;
     }
-    airService.setCharacteristic(Characteristic.AirQuality, level);
+    airService.setCharacteristic(Characteristic.AirQuality, level)
+        .setCharacteristic(Characteristic.StatusActive, Date.now() - date.getTime() < 60 * 60 * 1000);
 
     if (accessory.context.iaqi.co) {
         airService.setCharacteristic(Characteristic.CarbonMonoxideLevel, convert('co', 'usaEpa', 'raw', accessory.context.iaqi.co.v) * 0.0409 * 28.0101);
@@ -103,7 +106,7 @@ aqicn.prototype.updateState = function(accessory) {
 }
 
 aqicn.prototype.configureAccessory = function(accessory) {
-    accessory.on('identify', function(paired, callback) {
+    accessory.on('identify', (paired, callback) => {
         this.log(accessory.displayName, "identify requested!");
         callback();
     });
