@@ -58,12 +58,10 @@ aqicn.prototype.trimString = function(string, length) {
 }
 
 aqicn.prototype.updateState = function(accessory) {
-    var date = new Date(accessory.context.time.s);
     accessory.getService(Service.AccessoryInformation)
         .setCharacteristic(Characteristic.Manufacturer, this.trimString(accessory.context.attributions[0].name, 64))
         .setCharacteristic(Characteristic.Model, this.trimString(accessory.context.city.name, 64))
-        .setCharacteristic(Characteristic.SerialNumber, accessory.context.idx)
-        .setCharacteristic(Characteristic.FirmwareRevision, date.getDate() + '.' + date.getHours() + '.' + date.getMinutes());
+        .setCharacteristic(Characteristic.SerialNumber, accessory.context.idx);
 
     var airService = accessory.getService(Service.AirQualitySensor);
     var level = 0;
@@ -79,7 +77,7 @@ aqicn.prototype.updateState = function(accessory) {
         level = 5;
     }
     airService.setCharacteristic(Characteristic.AirQuality, level)
-        .setCharacteristic(Characteristic.StatusActive, Date.now() - date.getTime() < 60 * 60 * 1000);
+        .setCharacteristic(Characteristic.StatusActive, Date.now() - Date.parse(accessory.context.time.s) < 60 * 60 * 1000);
 
     if (accessory.context.iaqi.co) {
         airService.setCharacteristic(Characteristic.CarbonMonoxideLevel, convert('co', 'usaEpa', 'raw', accessory.context.iaqi.co.v) * 0.0409 * 28.0101);
