@@ -1,6 +1,6 @@
 {
   "name": "homebridge-aqicn",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Air quality plugin for Homebridge using aqicn",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
     "air quality"
   ],
   "author": "David Maher",
-  "license": "ISC",
+  "license": "BSD",
   "bugs": {
     "url": "https://github.com/Sunoo/homebridge-aqicn/issues"
   },
