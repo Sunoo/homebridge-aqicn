@@ -42,11 +42,26 @@ aqicn.prototype.fetchData = function() {
         .then(data => this.addUpdateAccessory(data));
 }
 
+aqicn.prototype.trimString = function(string, length) {
+    if (string.length > length) {
+        if (string[length + 1] && string[length + 1] == ' ') {
+            string = string.substring(0, length);
+        } else {
+            string = string.substring(0, string.lastIndexOf(' '));
+        }
+
+        if (string[string.length - 1] == ',') {
+            string = string.substring(0, string.length - 1);
+        }
+    }
+    return string;
+}
+
 aqicn.prototype.updateState = function(accessory) {
     var date = new Date(accessory.context.time.s);
     accessory.getService(Service.AccessoryInformation)
-        .setCharacteristic(Characteristic.Manufacturer, accessory.context.attributions[0].name)
-        .setCharacteristic(Characteristic.Model, accessory.context.city.name)
+        .setCharacteristic(Characteristic.Manufacturer, this.trimString(accessory.context.attributions[0].name, 64))
+        .setCharacteristic(Characteristic.Model, this.trimString(accessory.context.city.name, 64))
         .setCharacteristic(Characteristic.SerialNumber, accessory.context.idx)
         .setCharacteristic(Characteristic.FirmwareRevision, date.getDate() + '.' + date.getHours() + '.' + date.getMinutes());
 
