@@ -17,29 +17,37 @@ function aqicn(log, config, api) {
     this.accessory;
     this.service;
 
-    this.api_key = config["api_key"];
-    this.location_gps = config["location_gps"];
-    if (config["polling_minutes"] != null) {
-        this.interval = parseInt(config["polling_minutes"]) * 60 * 1000;
-    } else {
-        this.interval = 30 * 60 * 1000;
-    }
+    this.api_key = config.api_key;
+    this.location_gps = config.location_gps;
 
     if (api) {
         this.api = api;
         this.api.on('didFinishLaunching', this.fetchData.bind(this));
-        this.timer = setInterval(this.fetchData.bind(this), this.interval);
+        if (this.config.polling_minutes > 0) {
+            this.timer = setTimeout(this.fetchData.bind(this), this.config.polling_minutes * 60 * 1000);
+        }
     }
 }
 
 aqicn.prototype.fetchData = function() {
+    if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+    }
+
     aqicnApi.fetchByGps({
             latitude: this.location_gps[0],
             longitude: this.location_gps[1]
         }, {
             token: this.api_key
         })
-        .then(data => this.addUpdateAccessory(data));
+        .then(data => this.addUpdateAccessory(data))
+        .finally(function() {
+            if (this.config.polling_minutes > 0) {
+                this.timer = setTimeout(this.fetchData.bind(this),
+                    this.config.polling_minutes * 60 * 1000);
+            }
+        }.bind(this));
 }
 
 aqicn.prototype.trimString = function(string, length) {
@@ -123,6 +131,11 @@ aqicn.prototype.configureAccessory = function(accessory) {
         this.log(accessory.displayName, "identify requested!");
         callback();
     });
+    accessory.getService(Service.AirQualitySensor).getCharacteristic(Characteristic.AirQuality)
+        .on('get', callback => {
+            this.updateState(accessory);
+            callback();
+        });
 
     this.updateState(accessory);
 
@@ -143,7 +156,6 @@ aqicn.prototype.addUpdateAccessory = function(data) {
         this.api.registerPlatformAccessories("homebridge-aqicn", "aqicn", [newAccessory]);
     } else {
         this.accessory.context = data;
-
-        this.updateState(this.accessory);
     }
+    this.updateState(this.accessory);
 }
