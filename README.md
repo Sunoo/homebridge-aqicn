@@ -27,4 +27,4 @@ Fields:
 * "platform": Must always be "aqicn" (required)
 * "api_key": Your API key for calling aqicn, you can get one free from [here](https://aqicn.org/data-platform/token/) (required)
 * "location_gps": Latitude and longitude of your location, you can find that [here](http://www.mapcoordinates.net/en) (required)
-* "polling_minutes": Number of minutes between updates, polling disable if no entry (optional)
+* "polling_minutes": Number of minutes between updates, polling disabled if no entry (optional)
