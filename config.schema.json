@@ -1,0 +1,46 @@
+{
+    "pluginAlias": "aqicn",
+    "pluginType": "platform",
+    "singular": true,
+    "headerDisplay": "[aqicn](http://aqicn.org) plugin for [Homebridge](https://github.com/nfarina/homebridge).",
+    "footerDisplay": "Raise [Issues](https://github.com/Sunoo/homebridge-aqicn/issues) or submit [Pull Requests](https://github.com/Sunoo/homebridge-aqicn/pulls) on [Project Page](https://github.com/Sunoo/homebridge-aqicn).",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "title": "Name",
+                "type": "string",
+                "required": true,
+                "default": "aqicn",
+                "description": "A unique name for the accessory. It will be used as the accessory name in HomeKit."
+            },
+            "api_key": {
+                "title": "API Key",
+                "type": "string",
+                "placeholder": "N4wbhJlHEywbmGbV01SL3gHqrKKNavOfrLTt1OnZ",
+                "required": true,
+                "minLength": 40,
+                "maxLength": 40,
+                "description": "Your API key for calling aqicn, you can get one free from https://aqicn.org/data-platform/token/"
+            },
+            "location_gps": {
+                "title": "GPS Location",
+                "type": "array",
+                "required": true,
+                "maxItems": 2,
+                "minItems": 2,
+                "items": {
+                    "type": "number",
+                    "placeholder": "31.2047372"
+                },
+                "description": "Latitude and longitude of your location, you can find that at http://www.mapcoordinates.net/en"
+            },
+            "polling_minutes": {
+                "title": "Polling Minutes",
+                "type": "integer",
+                "required": false,
+                "description": "Number of minutes between updates, polling disabled if no entry."
+            }
+        }
+    }
+}

@@ -1,6 +1,7 @@
 {
+  "displayName": "Homebridge aqicn",
   "name": "homebridge-aqicn",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Air quality plugin for Homebridge using aqicn",
   "repository": {
     "type": "git",
