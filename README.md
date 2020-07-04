@@ -1,4 +1,6 @@
 # homebridge-aqicn
+[![npm](https://img.shields.io/npm/v/homebridge-aqicn) ![npm](https://img.shields.io/npm/dt/homebridge-aqicn)](https://www.npmjs.com/package/homebridge-aqicn)
+
 [aqicn](http://aqicn.org) plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
 # Installation
