@@ -9,8 +9,10 @@ import {
   PlatformAccessoryEvent,
   PlatformConfig
 } from 'homebridge';
-import { aqicn as aqicnApi } from '@shootismoke/dataproviders/lib/promise';
+import { aqicn } from '@shootismoke/dataproviders/lib/promise';
+import { ByStation } from '@shootismoke/dataproviders/lib/providers/aqicn/validation';
 import { convert } from '@shootismoke/convert';
+import { AqicnPlatformConfig } from './configTypes';
 
 let hap: HAP;
 let Accessory: typeof PlatformAccessory;
@@ -21,13 +23,13 @@ const PLATFORM_NAME = 'aqicn';
 class AqicnPlatform implements DynamicPlatformPlugin {
   private readonly log: Logging;
   private readonly api: API;
-  private readonly config: PlatformConfig;
+  private readonly config: AqicnPlatformConfig;
   private accessory? : PlatformAccessory;
   private timer? : NodeJS.Timeout;
 
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
-    this.config = config;
+    this.config = config as unknown as AqicnPlatformConfig;
     this.api = api;
 
     api.on(APIEvent.DID_FINISH_LAUNCHING, this.fetchData.bind(this));
@@ -42,13 +44,13 @@ class AqicnPlatform implements DynamicPlatformPlugin {
       this.timer = undefined;
     }
 
-    aqicnApi.fetchByGps({
+    aqicn.fetchByGps({
       latitude: this.config.location_gps[0],
       longitude: this.config.location_gps[1]
     }, {
       token: this.config.api_key
     })
-      .then((data: any) => this.addUpdateAccessory(data))
+      .then((data: ByStation) => this.addUpdateAccessory(data))
       .finally(((): void => {
         if (this.config.polling_minutes > 0) {
           this.timer = setTimeout(this.fetchData.bind(this),
@@ -171,7 +173,7 @@ class AqicnPlatform implements DynamicPlatformPlugin {
     this.accessory = accessory;
   }
 
-  addUpdateAccessory(data: any): void {
+  addUpdateAccessory(data: ByStation): void {
     if (!this.accessory) {
       const uuid = hap.uuid.generate('aqicn' + data.idx);
       const newAccessory = new Accessory('aqicn', uuid);
