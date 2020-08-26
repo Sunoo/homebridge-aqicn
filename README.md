@@ -1,6 +1,6 @@
 # homebridge-aqicn
 
-[![npm](https://img.shields.io/npm/v/homebridge-aqicn) ![npm](https://img.shields.io/npm/dt/homebridge-aqicn)](https://www.npmjs.com/package/homebridge-aqicn)
+[![npm](https://img.shields.io/npm/v/homebridge-aqicn) ![npm](https://img.shields.io/npm/dt/homebridge-aqicn)](https://www.npmjs.com/package/homebridge-aqicn) [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 
 [aqicn](http://aqicn.org) plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
