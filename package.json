@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge aqicn",
   "name": "homebridge-aqicn",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Air quality plugin for Homebridge using aqicn",
   "main": "dist/index.js",
   "repository": {
@@ -15,6 +15,24 @@
   ],
   "author": "David Maher",
   "license": "BSD-2-Clause",
+  "funding": [
+    {
+      "type": "kofi",
+      "url": "https://ko-fi.com/sunookitsune"
+    },
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/sunoo"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/Sunoo"
+    },
+    {
+      "type": "liberapay",
+      "url": "https://liberapay.com/Sunoo"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/Sunoo/homebridge-aqicn/issues"
   },
@@ -33,12 +51,12 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^3.7.0",
-    "@types/node": "14.0.25",
+    "@types/node": "14.6.0",
     "eslint": "^7.5.0",
     "homebridge": "^1.1.1",
     "markdownlint-cli": "^0.23.2",
     "rimraf": "^3.0.2",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.2"
   },
   "files": [
     "config.schema.json",
