@@ -29,11 +29,20 @@ class AqicnPlatform implements DynamicPlatformPlugin {
 
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
-    this.config = config as unknown as AqicnPlatformConfig;
+    this.config = config as AqicnPlatformConfig;
     this.api = api;
 
+    if (this.config.location_gps?.length != 2) {
+      this.log.error('There must be both a latitude and longitude defined in location_gps.');
+      return;
+    }
+    if (!this.config.api_key) {
+      this.log.error('There must be an api_key defined.');
+      return;
+    }
+
     api.on(APIEvent.DID_FINISH_LAUNCHING, this.fetchData.bind(this));
-    if (this.config.polling_minutes > 0) {
+    if (this.config.polling_minutes && this.config.polling_minutes > 0) {
       this.timer = setTimeout(this.fetchData.bind(this), this.config.polling_minutes * 60 * 1000);
     }
   }
@@ -45,14 +54,14 @@ class AqicnPlatform implements DynamicPlatformPlugin {
     }
 
     aqicn.fetchByGps({
-      latitude: this.config.location_gps[0],
-      longitude: this.config.location_gps[1]
+      latitude: this.config.location_gps![0],
+      longitude: this.config.location_gps![1]
     }, {
-      token: this.config.api_key
+      token: this.config.api_key!
     })
       .then((data: ByStation) => this.addUpdateAccessory(data))
       .finally(((): void => {
-        if (this.config.polling_minutes > 0) {
+        if (this.config.polling_minutes && this.config.polling_minutes > 0) {
           this.timer = setTimeout(this.fetchData.bind(this),
             this.config.polling_minutes * 60 * 1000);
         }
@@ -74,13 +83,13 @@ class AqicnPlatform implements DynamicPlatformPlugin {
     return string;
   }
 
-  updateState(accessory: PlatformAccessory): void {
+  updateState(accessory: PlatformAccessory): number | undefined {
     const accInfo = accessory.getService(hap.Service.AccessoryInformation);
     if (accInfo) {
       accInfo
         .setCharacteristic(hap.Characteristic.Manufacturer, this.trimString(accessory.context.attributions[0].name, 64))
         .setCharacteristic(hap.Characteristic.Model, this.trimString(accessory.context.city.name, 64))
-        .setCharacteristic(hap.Characteristic.SerialNumber, accessory.context.idx);
+        .setCharacteristic(hap.Characteristic.SerialNumber, accessory.context.idx.toString());
     }
 
     const airService = accessory.getService(hap.Service.AirQualitySensor);
@@ -111,48 +120,48 @@ class AqicnPlatform implements DynamicPlatformPlugin {
       if (!coService) {
         coService = accessory.addService(hap.Service.CarbonMonoxideSensor, 'aqicn');
       }
-      coService.setCharacteristic(hap.Characteristic.CarbonMonoxideLevel, convert('co', 'usaEpa', 'raw', accessory.context.iaqi.co.v) * 0.0409 * 28.0101)
+      coService.setCharacteristic(hap.Characteristic.CarbonMonoxideLevel, convert('co', 'usaEpa', 'ugm3', accessory.context.iaqi.co.v) * 0.0409 * 28.0101)
         .setCharacteristic(hap.Characteristic.StatusActive, active);
     } else if (coService) {
       accessory.removeService(coService);
     }
 
     if (accessory.context.iaqi.no2) {
-      airService.setCharacteristic(hap.Characteristic.NitrogenDioxideDensity, convert('no2', 'usaEpa', 'raw', accessory.context.iaqi.no2.v) * 0.0409 * 46.0055);
+      airService.setCharacteristic(hap.Characteristic.NitrogenDioxideDensity, convert('no2', 'usaEpa', 'ugm3', accessory.context.iaqi.no2.v) * 0.0409 * 46.0055);
     } else {
       const no2Char = airService.getCharacteristic(hap.Characteristic.NitrogenDioxideDensity);
       airService.removeCharacteristic(no2Char);
     }
 
     if (accessory.context.iaqi.o3) {
-      airService.setCharacteristic(hap.Characteristic.OzoneDensity, convert('o3', 'usaEpa', 'raw', accessory.context.iaqi.o3.v) * 0.0409 * 47.9982);
+      airService.setCharacteristic(hap.Characteristic.OzoneDensity, convert('o3', 'usaEpa', 'ugm3', accessory.context.iaqi.o3.v) * 0.0409 * 47.9982);
     } else {
       const o3Char = airService.getCharacteristic(hap.Characteristic.OzoneDensity);
       airService.removeCharacteristic(o3Char);
     }
 
     if (accessory.context.iaqi.pm10) {
-      airService.setCharacteristic(hap.Characteristic.PM10Density, convert('pm10', 'usaEpa', 'raw', accessory.context.iaqi.pm10.v));
+      airService.setCharacteristic(hap.Characteristic.PM10Density, convert('pm10', 'usaEpa', 'ugm3', accessory.context.iaqi.pm10.v));
     } else {
       const pm10Char = airService.getCharacteristic(hap.Characteristic.PM10Density);
       airService.removeCharacteristic(pm10Char);
     }
 
     if (accessory.context.iaqi.pm25) {
-      airService.setCharacteristic(hap.Characteristic.PM2_5Density, convert('pm25', 'usaEpa', 'raw', accessory.context.iaqi.pm25.v));
+      airService.setCharacteristic(hap.Characteristic.PM2_5Density, convert('pm25', 'usaEpa', 'ugm3', accessory.context.iaqi.pm25.v));
     } else {
       const pm25Char = airService.getCharacteristic(hap.Characteristic.PM2_5Density);
       airService.removeCharacteristic(pm25Char);
     }
 
     if (accessory.context.iaqi.so2) {
-      airService.setCharacteristic(hap.Characteristic.SulphurDioxideDensity, convert('so2', 'usaEpa', 'raw', accessory.context.iaqi.so2.v) * 0.0409 * 64.0638);
+      airService.setCharacteristic(hap.Characteristic.SulphurDioxideDensity, convert('so2', 'usaEpa', 'ugm3', accessory.context.iaqi.so2.v) * 0.0409 * 64.0638);
     } else {
       const so2Char = airService.getCharacteristic(hap.Characteristic.SulphurDioxideDensity);
       airService.removeCharacteristic(so2Char);
     }
 
-    accessory.updateReachability(true);
+    return level;
   }
 
   configureAccessory(accessory: PlatformAccessory): void {
@@ -163,8 +172,8 @@ class AqicnPlatform implements DynamicPlatformPlugin {
     if (airService) {
       airService.getCharacteristic(hap.Characteristic.AirQuality)
         .on('get', (callback: CharacteristicGetCallback) => {
-          this.updateState(accessory);
-          callback();
+          const level = this.updateState(accessory);
+          callback(undefined, level);
         });
     }
 
