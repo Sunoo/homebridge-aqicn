@@ -6,4 +6,5 @@ export type AqicnPlatformConfig = {
   api_key?: string;
   location_gps?: Array<number>;
   polling_minutes?: number;
+  inactive_hours?: number;
 };

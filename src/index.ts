@@ -121,7 +121,11 @@ class AqicnPlatform implements DynamicPlatformPlugin {
       level = 5;
     }
 
-    const active = Date.now() - Date.parse(data.time.s) < 60 * 60 * 1000;
+    const inactive_hours = this.config.inactive_hours ?? 1;
+    let active = true;
+    if (inactive_hours > 0) {
+      active = Date.now() - Date.parse(data.time.s) < inactive_hours * 60 * 60 * 1000;
+    }
 
     airService.setCharacteristic(hap.Characteristic.AirQuality, level)
       .setCharacteristic(hap.Characteristic.StatusActive, active);

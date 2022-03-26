@@ -40,6 +40,13 @@
                 "type": "integer",
                 "required": false,
                 "description": "Number of minutes between updates, polling disabled if no entry."
+            },
+            "inactive_hours": {
+                "title": "Inactive Hours",
+                "type": "integer",
+                "placeholder": 1,
+                "required": false,
+                "description": "Number of hours before sensor is marked inactive. Set to 0 to always show active."
             }
         }
     }
